@@ -14,16 +14,14 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-# Cache to store API responses and minimize requests
 price_cache = {
     'crypto': {'data': {}, 'timestamp': 0},
     'stocks': {'data': {}, 'timestamp': 0}
 }
 
-CACHE_DURATION = 30  # seconds
+CACHE_DURATION = 30  
 ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
 
-# In-memory storage for user data
 users = {
     'demo_user': {
         'balance': 10000,
@@ -33,7 +31,6 @@ users = {
     }
 }
 
-# ... (previous imports remain same)
 
 def get_crypto_prices_data():
     try:
@@ -41,7 +38,6 @@ def get_crypto_prices_data():
         if current_time - price_cache['crypto']['timestamp'] < CACHE_DURATION:
             return price_cache['crypto']['data']
 
-        # Expanded list of cryptocurrencies
         coins = ','.join([
             'bitcoin',          # BTC
             'ethereum',         # ETH
@@ -75,7 +71,6 @@ def get_crypto_prices_data():
         )
         data = response.json()
 
-        # Mapping of CoinGecko IDs to ticker symbols
         symbol_mapping = {
             'bitcoin': 'BTC',
             'ethereum': 'ETH',
@@ -125,7 +120,6 @@ def get_stock_prices_data():
         if current_time - price_cache['stocks']['timestamp'] < CACHE_DURATION:
             return price_cache['stocks']['data']
 
-        # Expanded list of stocks from different sectors
         stocks = [
             # Tech
             'AAPL',  # Apple
@@ -162,7 +156,6 @@ def get_stock_prices_data():
 
         formatted_data = {}
         
-        # Alpha Vantage has a rate limit, so we'll batch requests
         for symbol in stocks:
             try:
                 response = requests.get(
@@ -200,7 +193,6 @@ def get_stock_prices_data():
             return price_cache['stocks']['data']
         return {'AAPL': {'price': 150, 'change': 0}}
 
-# Optional: Add a helper route to get available symbols
 @app.route('/api/available-symbols', methods=['GET'])
 def get_available_symbols():
     crypto_data = get_crypto_prices_data()
@@ -210,7 +202,6 @@ def get_available_symbols():
         'crypto': list(crypto_data.keys()),
         'stocks': list(stock_data.keys())
     })
-# Your existing routes remain the same, they'll now use the real API data
 @app.route('/api/crypto/prices', methods=['GET'])
 def get_crypto_prices():
     return jsonify(get_crypto_prices_data())
@@ -219,7 +210,6 @@ def get_crypto_prices():
 def get_stock_prices():
     return jsonify(get_stock_prices_data())
 
-# ... rest of your code remains the same ...
 
 @app.route('/api/portfolio', methods=['GET'])
 def get_portfolio():
@@ -232,7 +222,7 @@ def manage_funds():
         data = request.json
         username = 'demo_user'
         amount = float(data['amount'])
-        action = data['action']  # 'add' or 'withdraw'
+        action = data['action']  
         
         if action == 'withdraw' and amount > users[username]['balance']:
             return jsonify({'error': 'Insufficient funds'}), 400

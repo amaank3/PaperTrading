@@ -1,5 +1,5 @@
 import React from "react";
-import Dashboard from "./components/dashboard.jsx";  // Match the actual filename case
+import Dashboard from "./components/dashboard.jsx"; 
 
 const App = () => {
   return (
